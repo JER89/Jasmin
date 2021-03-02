@@ -1,80 +1,83 @@
 /*
 Copyright (c) 2008-2015 Pivotal Labs
-L'autorisation est par la présente accordée, gratuitement, à toute personne obtenant
-une copie de ce logiciel et des fichiers de documentation associés (le
-«Logiciel»), pour traiter le Logiciel sans restriction, y compris
-sans limitation les droits d'utilisation, de copie, de modification, de fusion, de publication,
-distribuer, concéder une sous-licence et / ou vendre des copies du Logiciel, et
-permettre aux personnes à qui le Logiciel est fourni de le faire, sous réserve de
-les conditions suivantes:
-L'avis de droit d'auteur ci-dessus et cet avis d'autorisation doivent être
-inclus dans toutes les copies ou parties substantielles du Logiciel.
-LE LOGICIEL EST FOURNI "EN L'ÉTAT", SANS GARANTIE D'AUCUNE SORTE,
-EXPRESSE OU IMPLICITE, Y COMPRIS MAIS SANS S'Y LIMITER LES GARANTIES DE
-QUALITÉ MARCHANDE, ADAPTATION À UN USAGE PARTICULIER ET
-NON-CONTREFAÇON. EN AUCUN CAS, LES AUTEURS OU TITULAIRES DES DROITS D'AUTEUR NE SERONT
-RESPONSABLE DE TOUTE RÉCLAMATION, DOMMAGES OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS UNE ACTION
-DE CONTRAT, DE TORT OU AUTRE, RÉSULTANT DE, HORS OU EN LIEN AVEC
-AVEC LE LOGICIEL OU L'UTILISATION OU D'AUTRES ACTIONS DANS LE LOGICIEL.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-jasmineRequire . html  =  fonction (j$) {
-  j$.ResultsNode  =  jasmineRequire . ResultsNode () ;
-  j$.HtmlReporter  =  jasmineRequire . HtmlReporter (j$) ;
-  j$.QueryString  =  jasmineRequire . QueryString () ;
-  j$.HtmlSpecFilter  =  jasmineRequire . HtmlSpecFilter () ;
-} ;
+jasmineRequire.html = function(j$) {
+  j$.ResultsNode = jasmineRequire.ResultsNode();
+  j$.HtmlReporter = jasmineRequire.HtmlReporter(j$);
+  j$.QueryString = jasmineRequire.QueryString();
+  j$.HtmlSpecFilter = jasmineRequire.HtmlSpecFilter();
+};
 
-jasmineRequire . HtmlReporter  =  fonction ( j $ )  {
+jasmineRequire.HtmlReporter = function(j$) {
 
-  var  noopTimer  =  {
-    début : function ( )  { } ,
-    écoulé : function ( )  {  return  0 ;  }
-  } ;
+  var noopTimer = {
+    start: function() {},
+    elapsed: function() { return 0; }
+  };
 
-  function  HtmlReporter ( options )  {
-    var  env  =  options . env  ||  { } ,
-      getContainer  =  options . getContainer ,
-      createElement  =  options . createElement ,
-      createTextNode  =  options . createTextNode ,
-      onRaiseExceptionsClick  =  options . onRaiseExceptionsClick  ||  function ( )  { } ,
-      onThrowExpectationsClick  =  options . onThrowExpectationsClick  ||  function ( )  { } ,
-      onRandomClick  =  options . onRandomClick  ||  function ( )  { } ,
-      addToExistingQueryString  =  options . addToExistingQueryString  ||  defaultQueryString ,
-      timer  =  options . minuterie  ||  noopTimer ,
-      résultats  =  [ ] ,
-      specsExecuted  =  0 ,
-      failureCount  =  0 ,
-      pendingSpecCount  =  0 ,
-      htmlReporterMain ,
-      symboles ,
-      failedSuites  =  [ ] ;
+  function HtmlReporter(options) {
+    var env = options.env || {},
+      getContainer = options.getContainer,
+      createElement = options.createElement,
+      createTextNode = options.createTextNode,
+      onRaiseExceptionsClick = options.onRaiseExceptionsClick || function() {},
+      onThrowExpectationsClick = options.onThrowExpectationsClick || function() {},
+      onRandomClick = options.onRandomClick || function() {},
+      addToExistingQueryString = options.addToExistingQueryString || defaultQueryString,
+      timer = options.timer || noopTimer,
+      results = [],
+      specsExecuted = 0,
+      failureCount = 0,
+      pendingSpecCount = 0,
+      htmlReporterMain,
+      symbols,
+      failedSuites = [];
 
-    ceci . initialiser  =  fonction ( )  {
-      clearPrior () ;
-      htmlReporterMain  =  createDom ( 'div' ,  { className :'jasmine_html-reporter' } ,
-        createDom ( 'div' ,  { className :'jasmine-banner' } ,
-          createDom ( 'a' ,  { className : 'jasmine-title' ,  href : 'http://jasmine.github.io/' ,  cible : '_blank'} ) ,
-          createDom ( 'span' ,  { className : 'jasmine-version' } ,  j $. version )
-        ) ,
-        createDom ( 'ul' ,  { className :'jasmine-symbol-summary' } ) ,
-        createDom ( 'div' ,  { className : 'jasmine-alert' } ) ,
-        createDom ( 'div' ,  { className : 'jasmine-results' } ,
-          createDom ( 'div' ,  { className : 'jasmine-failures' } )
+    this.initialize = function() {
+      clearPrior();
+      htmlReporterMain = createDom('div', {className: 'jasmine_html-reporter'},
+        createDom('div', {className: 'jasmine-banner'},
+          createDom('a', {className: 'jasmine-title', href: 'http://jasmine.github.io/', target: '_blank'}),
+          createDom('span', {className: 'jasmine-version'}, j$.version)
+        ),
+        createDom('ul', {className: 'jasmine-symbol-summary'}),
+        createDom('div', {className: 'jasmine-alert'}),
+        createDom('div', {className: 'jasmine-results'},
+          createDom('div', {className: 'jasmine-failures'})
         )
-      ) ;
-      getContainer ( ) . appendChild ( htmlReporterMain ) ;
-    } ;
+      );
+      getContainer().appendChild(htmlReporterMain);
+    };
 
-    var  totalSpecsDefined ;
-    ceci . jasmineStarted  =  fonction ( options) {
-      totalSpecsDefined  =  options . totalSpecsDefined  || 0;
-      minuterie . début ( );
-    } ;
+    var totalSpecsDefined;
+    this.jasmineStarted = function(options) {
+      totalSpecsDefined = options.totalSpecsDefined || 0;
+      timer.start();
+    };
 
-    var  summary  =  createDom ( 'div' ,  { className : 'jasmine-summary' } ) ;
+    var summary = createDom('div', {className: 'jasmine-summary'});
 
-    var  topResults  =  nouveau  j $ . ResultsNode ( { } ,  '' , null),
-      currentParent  =  topResults ;
+    var topResults = new j$.ResultsNode({}, '', null),
+      currentParent = topResults;
 
     this.suiteStarted = function(result) {
       currentParent.addChild(result, 'suite');
