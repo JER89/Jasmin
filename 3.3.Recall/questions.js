@@ -144,8 +144,15 @@ let convertArrayToObject = (array) => {
 }
 
 let getAllLetters = (array) => {
+   let letters = [];
+   for (let i = 0; i < array.length; i++) {
+       let word = array[i].split("");
+       for (let j = 0; j < word.length; j++) {
+           letters.push(word[j]);
+       }
+   }
   
-    return ;
+     return [...new Set(letters.sort())] ;
 }
 // http://nelsonwells.net/2011/10/swap-object-key-and-values-in-javascript
 let swapKeysAndValues = (object) => {
@@ -199,9 +206,17 @@ let getDomainName = (string) => {
 }
 
 let titleize = (string) => {
+    let array = string.toLowerCase().split(' ');
+    for(let i =0; i < array.length; i++) {
+        if(array[i].length > 3 || i == 0 || array[i - 1].indexOf('.') > 0)
+        { array[i] = array[i].charAt(0).toUpperCase() + array[i].substring(1).toLowerCase();
+
+
+        }
+    }
     
    
-    return 'Write your method here';
+    return array.join(' ');
 }
 
 let checkForSpecialCharacters = (string) => {
@@ -226,8 +241,15 @@ let factorial = (number) => {
     }
     return factorial(number);
 }
-
+//
 let findAnagrams = (string) => {
+    if(string.length === 1){
+    return string;
+    }
+    for (let i = 0; i < string.length; i++) {
+
+    }
+
     
     return 'Write your method here';
 }
